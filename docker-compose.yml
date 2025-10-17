@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    container_name: batch_example_container
+    image: postgres:15.2
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - db:/data/db
+      - ./src/main/resources/sql/batch_example_container.sql:/docker-entrypoint-initdb.d/batch_example_container.sql
+      - ./src/main/resources/sql/batch_example_container_data.sql:/docker-entrypoint-initdb.d/batch_example_container_data.sql
+    networks:
+      - laboratory
+    environment:
+      POSTGRES_DB: batch_example
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+
+volumes:
+  postgres_data:
+  db:
+
+
+networks:
+  laboratory:
