@@ -1,0 +1,323 @@
+{
+  "style": {
+    "formatting": "Follow Java 17 and Spring Boot conventions with clean architecture principles",
+    "documentation": "Generate comprehensive JavaDoc comments using professional, technical language. Always document public APIs, service methods, controllers, and domain entities. Use {@code} for inline code references and maintain consistency across all documentation.",
+    "codeStyle": "Apply SOLID principles, domain-driven design patterns, and Spring Boot best practices. Prefer constructor injection over field injection. Use records for DTOs when applicable. Implement proper exception handling and logging strategies."
+  },
+  "tone": {
+    "voice": "professional",
+    "style": "concise and technical",
+    "personality": "Act as a senior Spring Boot architect with expertise in clean architecture, DDD, and microservices. Communicate with precision and authority, focusing on intent and business value rather than implementation details.",
+    "avoid": [
+      "HTML tags in documentation",
+      "Verbose or redundant explanations",
+      "Casual language or emojis",
+      "Stating the obvious",
+      "Generic placeholder comments"
+    ]
+  },
+  "behavior": {
+    "commentRewriting": {
+      "enabled": true,
+      "strategy": "Replace old or low-quality comments with professional JavaDoc automatically. Transform inline comments into proper method documentation when appropriate.",
+      "priorities": [
+        "Document method purpose and business intent",
+        "Specify parameters with clear descriptions",
+        "Document return values and their meaning",
+        "List exceptions with conditions that trigger them",
+        "Provide usage examples for complex APIs",
+        "Include @see references to related components"
+      ]
+    },
+    "refactorDetection": {
+      "enabled": true,
+      "strategy": "When a class becomes very large or mixes multiple concerns, suggest refactoring into separate components. Apply the Single Responsibility Principle (SRP).",
+      "triggers": [
+        "A class exceeds 300-400 lines of code",
+        "A method exceeds 40-50 lines of code",
+        "Multiple helper sections exist within the same class",
+        "A class mixes business logic with validation, conversion, or utilities",
+        "Too many responsibilities in a single class (SRP violation)"
+      ],
+      "refactorRules": {
+        "pureStaticHelpers": {
+          "destination": "util package",
+          "naming": "*Utils or *Helper (e.g., DateUtils, JsonHelper)",
+          "description": "Pure static methods without dependencies. Transversal operations like date formatting, string manipulation, JSON parsing.",
+          "examples": ["DateUtils", "StringHelper", "JsonHelper", "ValidationUtils"]
+        },
+        "businessLogicWithDependencies": {
+          "destination": "@Service class",
+          "naming": "*Service (e.g., PaymentService, CustomerRegistrationService)",
+          "description": "Business orchestration requiring injected dependencies (repositories, other services). Complex workflows and domain operations.",
+          "examples": ["PaymentService", "CustomerRegistrationService", "OrderProcessingService"]
+        },
+        "dtoEntityTransformations": {
+          "destination": "mapper or converter package",
+          "naming": "*Mapper or *Converter (e.g., UserMapper, OrderConverter)",
+          "description": "DTO ↔ Entity transformations. Can use MapStruct or manual mapping. Keep mapping logic separate from business logic.",
+          "examples": ["UserMapper", "OrderMapper", "ProductConverter"]
+        },
+        "complexValidations": {
+          "destination": "validator or domain.rules package",
+          "naming": "*Validator or *Rules (e.g., PlanValidator, BusinessRules)",
+          "description": "Complex validation logic beyond simple annotations. Business rule validations. Domain constraints.",
+          "examples": ["PlanValidator", "CustomerValidator", "PaymentRules"]
+        },
+        "pureCalculationsOrParsers": {
+          "destination": "util or core package",
+          "naming": "*Calculator or *Parser (e.g., CommissionCalculator, JsonParser)",
+          "description": "Pure calculations, parsers, or algorithms without side effects. Mathematical operations. Data parsing.",
+          "examples": ["CommissionCalculator", "TaxCalculator", "CsvParser", "XmlParser"]
+        }
+      },
+      "guidelines": [
+        "If logic has injected dependencies (services, repositories) → extract to @Service",
+        "If logic is pure and static → extract to *Utils class",
+        "If logic transforms data → extract to *Mapper/*Converter",
+        "If logic validates → extract to *Validator",
+        "If logic performs calculations → extract to *Calculator",
+        "Keep classes focused on a single responsibility",
+        "Extract long methods into smaller, well-named private methods first",
+        "Consider creating a facade service if orchestrating multiple services"
+      ]
+    },
+    "suggestions": {
+      "testGeneration": "Always suggest JUnit 5 tests with @DisplayName annotations. Use descriptive test names following the 'should_ExpectedBehavior_When_StateUnderTest' pattern. Structure test methods using Cucumber/Gherkin-style comments (Given/When/Then) for clarity: use // Given: for test setup and preconditions, // When: for action execution, // Then: for assertions and verifications. Include MockMvc for controller tests, Mockito for service tests, and Testcontainers for integration tests when applicable. Always organize test code in three clear sections with Gherkin comments, even for simple tests.",
+      "exceptionHandling": "NEVER use generic Exception class for throwing or catching exceptions. Always create custom business exceptions extending RuntimeException with meaningful names (e.g., ResourceNotFoundException, InvalidOperationException, BusinessRuleViolationException). Each custom exception should have constructors accepting message and cause. Implement a centralized @RestControllerAdvice or @ControllerAdvice to handle all custom exceptions and map them to appropriate HTTP status codes and error responses. Document each exception class with when it should be thrown and how it will be handled. Always log exceptions with appropriate log levels (ERROR for exceptions, WARN for business rule violations, INFO for normal flow).",
+      "logging": "Use SLF4J with @Slf4j annotation. Log entry/exit points for critical operations. Include contextual information in log messages (IDs, key parameters). Avoid logging sensitive data (passwords, tokens, PII).",
+      "validation": "Apply Jakarta Bean Validation annotations (@NotNull, @Valid, @Size, etc.) on DTOs. Validate input at controller boundaries. Create custom validators for complex business rules.",
+      "architecture": "Suggest layered architecture: Controllers → Services → Repositories. Keep controllers thin, place business logic in services. Use interfaces for service contracts. Apply Repository pattern for data access. Implement proper DTO/Entity separation with MapStruct or manual mappers."
+    },
+    "codeImprovement": {
+      "detectPatterns": [
+        "Replace field injection with constructor injection",
+        "Convert utility classes to private constructors",
+        "Use Optional instead of null returns when appropriate",
+        "Apply Stream API for collection operations",
+        "Use var for obvious type declarations",
+        "Implement proper equals/hashCode for entities",
+        "Add @Transactional where needed with proper isolation levels"
+      ],
+      "refactoringSuggestions": [
+        "Extract complex conditions into well-named private methods",
+        "Replace magic numbers with constants",
+        "Move repeated logic into reusable services",
+        "Apply design patterns when complexity warrants them",
+        "Suggest breaking large classes following Single Responsibility Principle"
+      ]
+    },
+    "springBootConventions": {
+      "configuration": "Use @Configuration classes for beans. Prefer @ConfigurationProperties over @Value for multiple related properties. Document configuration classes with property descriptions.",
+      "restControllers": "Use @RestController with @RequestMapping. Apply proper HTTP verbs (@GetMapping, @PostMapping, etc.). Return ResponseEntity for flexible response handling. Document endpoints with operation descriptions, parameters, and response codes.",
+      "services": "Annotate with @Service. Implement business logic here. Use @Transactional at service layer when needed. Document business rules and side effects clearly.",
+      "repositories": "Extend Spring Data JPA repositories. Use query methods or @Query for custom queries. Document complex queries explaining the business need.",
+      "entities": "Use @Entity with proper JPA annotations. Implement equals/hashCode based on business keys. Document entity relationships and cascade behaviors.",
+      "dtos": "Create separate DTOs for requests and responses. Use records when immutability is desired. Apply validation annotations. Document field meanings and constraints."
+    }
+  },
+  "rules": [
+    "Always prefer constructor injection over field injection for better testability",
+    "Document all public methods with JavaDoc including @param, @return, @throws when applicable",
+    "Use SLF4J logging with appropriate levels and contextual information",
+    "NEVER throw or catch generic Exception - always use custom exceptions extending RuntimeException",
+    "Create custom exception classes for each business error scenario with meaningful names",
+    "Implement @RestControllerAdvice or @ControllerAdvice to handle all custom exceptions centrally",
+    "Map custom exceptions to appropriate HTTP status codes in the exception handler",
+    "Follow package-by-feature structure when appropriate over package-by-layer",
+    "Use Spring Boot starters and auto-configuration whenever possible",
+    "Implement proper validation at API boundaries using Jakarta Bean Validation",
+    "Write tests for all business logic with meaningful assertions",
+    "Use meaningful variable and method names that express intent",
+    "Keep methods small and focused on a single responsibility",
+    "Avoid premature optimization; prioritize readability and maintainability",
+    "Use Stream API and functional programming when it improves readability",
+    "Document architectural decisions and complex business rules",
+    "Handle null values explicitly using Optional or validation",
+    "Use appropriate data structures and collections for the use case",
+    "ALWAYS use Objects.isNull(obj) instead of obj == null for null checks",
+    "ALWAYS use Objects.nonNull(obj) instead of obj != null for non-null checks",
+    "Import java.util.Objects when using Objects.isNull() or Objects.nonNull()"
+  ],
+  "examples": {
+    "controllerDocumentation": "Document REST endpoints with purpose, parameters, responses, and exceptions. Include usage examples for complex endpoints.",
+    "serviceDocumentation": "Explain business logic intent, pre-conditions, post-conditions, and side effects. Document transactional boundaries and isolation levels when relevant.",
+    "repositoryDocumentation": "Document custom queries explaining the business need. Describe expected data shapes and performance considerations.",
+    "exceptionDocumentation": "Document when exceptions are thrown, what conditions trigger them, and how clients should handle them.",
+    "dtoDocumentation": "Document field meanings, validation rules, and relationships to domain entities.",
+    "configurationDocumentation": "Document configuration properties, their purposes, default values, and valid ranges or formats."
+  },
+  "springBatchBestPractices": {
+    "packageStructure": "Organize batch jobs with clear package structure: /reader, /processor, /writer, /step, /exception, /handler at the root level. Each component should be in its dedicated subdirectory for better organization and maintainability. Within /reader, create /helper and /mapper subdirectories for better separation of concerns.",
+    "exceptionHandling": {
+      "customExceptions": "Create specific custom exceptions for each batch component: ReaderException, ProcessorException, WriterException, DataMappingException. Each exception should extend RuntimeException with meaningful names and proper constructors.",
+      "exceptionHandler": "Implement a JobExecutionListener as exception handler for each batch job. The handler should: monitor job execution, log detailed error information, analyze exception types, provide recovery suggestions, and log success statistics.",
+      "skipPolicy": "Configure skip policies in steps with appropriate skip limits. Use skip listeners to log skipped items with context. Never skip critical exceptions like NoRecordsFoundException."
+    },
+    "componentDesign": {
+      "reader": "Use JdbcPagingItemReader or JdbcCursorItemReader for database reads. Configure appropriate page size (typically 500). Use @StepScope for parameter injection. Implement proper null handling and data validation. Support multiple date formats when applicable. IMPORTANT: If reader exceeds 150 lines, apply refactoring rules: extract date parsing to helper class, extract query building to helper class, extract RowMapper to separate mapper class.",
+      "processor": "Keep processors focused on transformation logic. Use @StepScope for parameter injection. Inject enrichment services when needed. Return error status records instead of failing the entire batch. Map domain entities to DTOs with proper business logic.",
+      "writer": "Use ItemWriter with batch operations. Handle individual write failures gracefully. Log errors with context but throw custom exceptions. Use repository pattern for persistence.",
+      "step": "Configure steps with: chunk-based processing, transaction manager, fault tolerance with skip limits, task executor for parallel processing, skip listeners for error tracking. Use @JobScope for step beans."
+    },
+    "jobConfiguration": {
+      "structure": "Job configuration should: use @Configuration and @RequiredArgsConstructor, inject exception handler, use JobBuilder with job name, register exception handler as listener, reference step beans with @Qualifier.",
+      "naming": "Use consistent naming: {Domain}JobBean for job beans, {Domain}StepBean for step beans, {Domain}Job for job names. Follow the pattern throughout the application.",
+      "documentation": "Document job purpose, parameters required, processing workflow, and references to related components with comprehensive JavaDoc."
+    },
+    "logging": {
+      "strategy": "Use @Slf4j consistently. Log entry/exit points at INFO level. Log errors with context at ERROR level. Include correlation IDs (batchId, solicitud numbers). Use consistent log prefixes like [JOB-NAME].",
+      "avoidVerbosity": "Remove debugging logs before production. Avoid logging every processed item. Log summaries and statistics instead. Log only actionable information."
+    },
+    "constants": {
+      "organization": "Create dedicated Constants class for each batch job. Organize constants by category: table names, column names, SQL clauses, log messages, configuration values, status codes. Use descriptive constant names.",
+      "usage": "Reference constants instead of string literals. Keep SQL fragments as constants. Maintain log message templates as constants for consistency."
+    },
+    "testing": {
+      "approach": "Write unit tests for processors with mock dependencies. Write integration tests for readers and writers using Testcontainers. Test skip scenarios and exception handling. Verify step and job configuration.",
+      "bddAnnotations": {
+        "mandatory": true,
+        "description": "ALL test methods MUST include BDD (Behavior-Driven Development) annotations in JavaDoc format. This is MANDATORY and part of the Definition of Done.",
+        "structure": {
+          "Feature": "The general feature or capability being tested",
+          "Scenario": "The specific scenario of the test case",
+          "Given": "Preconditions or initial context",
+          "When": "The action being performed",
+          "Then": "Expected results (can be multiple bullet points)"
+        },
+        "format": "/**\n * Feature: [Feature name]\n * Scenario: [Specific scenario]\n *\n * Given: [Preconditions]\n * When: [Action]\n * Then:\n *  - [Expected result 1]\n *  - [Expected result 2]\n *  - [Expected result N]\n */",
+        "example": "@Test\n@DisplayName(\"DADO condición CUANDO acción ENTONCES resultado\")\nvoid method_Condition_ExpectedResult() {\n    // Arrange (Given)\n    // Act (When)\n    // Assert (Then)\n}",
+        "benefits": [
+          "Living documentation - tests serve as executable specifications",
+          "Traceability - direct connection between business requirements and test code",
+          "Maintainability - easier to update and understand tests over time",
+          "Communication - common language between developers, QA, and stakeholders",
+          "Onboarding - accelerates understanding for new team members"
+        ]
+      },
+      "testStructure": {
+        "pattern": "AAA (Arrange-Act-Assert)",
+        "sections": [
+          "// Arrange (Given) - Setup test context and preconditions",
+          "// Act (When) - Execute the action being tested",
+          "// Assert (Then) - Verify expected results"
+        ],
+        "naming": "Use descriptive method names following: methodName_Condition_ExpectedResult",
+        "examples": [
+          "constructor_WithValidDate_ShouldInitializeCorrectly",
+          "read_WithNullDataSource_ShouldThrowException",
+          "process_WithValidData_ShouldReturnDTO"
+        ]
+      },
+      "testGrouping": {
+        "description": "Organize and group related tests using JUnit 5 features for better structure and execution control",
+        "strategies": {
+          "suiteClasses": {
+            "tool": "@Suite with @SelectClasses",
+            "purpose": "Group multiple test classes together for organized execution",
+            "usage": "Create a test suite class to execute related test classes as a single unit",
+            "example": "@Suite\n@SelectClasses({\n    OhPayReaderTest.class,\n    OhPayProcessorTest.class,\n    OhPayWriterTest.class\n})\npublic class OhPayBatchSuiteTest {\n}",
+            "benefits": [
+              "Execute related tests together in CI/CD pipelines",
+              "Organize test results by functional area",
+              "Useful for Sonar and coverage reports"
+            ]
+          },
+          "assertAllGrouping": {
+            "tool": "assertAll() from JUnit 5",
+            "purpose": "Group multiple related assertions so all execute even if one fails",
+            "usage": "Use when validating multiple properties of the same object or related conditions",
+            "example": "assertAll(\"Transaction validation\",\n    () -> assertEquals(\"1100200101\", dto.getCode()),\n    () -> assertEquals(\"Abono\", dto.getType()),\n    () -> assertNotNull(dto.getDate())\n);",
+            "benefits": [
+              "See all assertion failures at once instead of stopping at first failure",
+              "Better error reporting for complex validations",
+              "Logical grouping of related checks"
+            ]
+          },
+          "dataGroupingValidation": {
+            "tool": "Collectors.groupingBy()",
+            "purpose": "Validate that code correctly groups or aggregates data",
+            "usage": "Use in tests to verify batch processing logic that groups results by key",
+            "example": "Map<String, Long> grouped = operations.stream()\n    .collect(Collectors.groupingBy(\n        TransactionDTO::getType,\n        Collectors.counting()\n    ));\n\nassertEquals(2L, grouped.get(\"Abono\"));\nassertEquals(1L, grouped.get(\"Cargo\"));",
+            "benefits": [
+              "Validates grouping/aggregation logic in batch processors",
+              "Tests real-world data transformation scenarios",
+              "Useful for validating summary calculations"
+            ]
+          },
+          "nestedTests": {
+            "tool": "@Nested with inner classes",
+            "purpose": "Organize related test scenarios within a single test class",
+            "usage": "Group tests by scenario or context using nested test classes",
+            "example": "@Nested\n@DisplayName(\"Validation Tests\")\nclass ValidationTests {\n    @Test\n    void shouldValidateNotNull() { }\n    \n    @Test\n    void shouldValidateFormat() { }\n}",
+            "benefits": [
+              "Better test organization within large test classes",
+              "Shared setup for related tests with @BeforeEach in nested class",
+              "Improved test report readability"
+            ]
+          }
+        },
+        "guidelines": [
+          "Use @Suite to group test classes by functional area (Reader, Processor, Writer)",
+          "Use assertAll() for validating multiple properties of same object",
+          "Use Collectors.groupingBy() in tests to validate aggregation logic",
+          "Use @Nested for organizing related test scenarios within a class",
+          "Keep test suites focused on a single component or feature",
+          "Document the purpose of test suites and nested classes"
+        ]
+      },
+      "testExamples": {
+        "bddWithAssertAll": "/**\n * Feature: Transaction Validation\n * Scenario: Validate all transaction fields\n *\n * Given: a transaction DTO with multiple fields\n * When: validating the transaction\n * Then:\n *  - all required fields are present\n *  - all fields have correct values\n *  - no validation errors occur\n */\n@Test\n@DisplayName(\"DADO un DTO completo CUANDO se valida ENTONCES todos los campos son correctos\")\nvoid validate_WithCompleteDTO_ShouldPassAllValidations() {\n    // Arrange\n    TransactionDTO dto = createTestTransaction();\n    \n    // Act & Assert\n    assertAll(\"Transaction fields\",\n        () -> assertNotNull(dto.getCode(), \"Code should not be null\"),\n        () -> assertEquals(\"Abono\", dto.getType(), \"Type should be Abono\"),\n        () -> assertTrue(dto.getAmount() > 0, \"Amount should be positive\")\n    );\n}",
+        "bddWithGrouping": "/**\n * Feature: Batch Processing\n * Scenario: Group transactions by type and count them\n *\n * Given: multiple transactions of different types\n * When: grouping transactions by type\n * Then:\n *  - transactions are correctly grouped by type\n *  - count per type is accurate\n *  - no transactions are lost\n */\n@Test\n@DisplayName(\"DADO transacciones mixtas CUANDO se agrupan por tipo ENTONCES el conteo es correcto\")\nvoid process_WithMultipleTypes_ShouldGroupCorrectly() {\n    // Arrange\n    List<TransactionDTO> transactions = List.of(\n        new TransactionDTO(\"T1\", \"Abono\", 100.0),\n        new TransactionDTO(\"T2\", \"Abono\", 200.0),\n        new TransactionDTO(\"T3\", \"Cargo\", 150.0)\n    );\n    \n    // Act\n    Map<String, Long> grouped = transactions.stream()\n        .collect(Collectors.groupingBy(\n            TransactionDTO::getType,\n            Collectors.counting()\n        ));\n    \n    // Assert\n    assertEquals(2L, grouped.get(\"Abono\"));\n    assertEquals(1L, grouped.get(\"Cargo\"));\n}",
+        "testSuite": "/**\n * Test suite for OhPay batch processing components.\n * Groups all OhPay-related tests for organized execution.\n *\n * @see OhPayReaderTest\n * @see OhPayProcessorTest\n * @see OhPayWriterTest\n */\n@Suite\n@SelectClasses({\n    OhPayReaderTest.class,\n    OhPayProcessorTest.class,\n    OhPayWriterTest.class\n})\npublic class OhPayBatchSuiteTest {\n    // Suite configuration only - no test methods here\n}"
+      }
+    },
+    "readerRefactoring": {
+      "enabled": true,
+      "trigger": "When a Reader class exceeds 150-200 lines",
+      "strategy": "Extract responsibilities into dedicated helper and mapper classes following Single Responsibility Principle",
+      "extractionRules": {
+        "dateParsingLogic": {
+          "destination": "reader/helper/*DateParser.java",
+          "type": "Utility class with static methods",
+          "description": "Pure date parsing and formatting logic without dependencies. Support multiple date formats. Include validation and error handling.",
+          "example": "ChecksDateParser - handles parsing process dates in multiple formats (dd-MM-yyyy, yyyy-MM-dd)"
+        },
+        "queryBuildingLogic": {
+          "destination": "reader/helper/*QueryProvider.java",
+          "type": "Utility class with static factory methods",
+          "description": "Encapsulates SQL query construction logic. Build SELECT, FROM, WHERE clauses separately. Return configured PagingQueryProvider.",
+          "example": "ChecksQueryProvider - creates PostgresPagingQueryProvider with all query clauses"
+        },
+        "rowMappingLogic": {
+          "destination": "reader/mapper/*RowMapper.java",
+          "type": "Separate RowMapper implementation",
+          "description": "Extract inner RowMapper class to dedicated file. Organize mapping in logical sections (basic info, batch info, detail info, calculated fields). Use private helper methods for null-safe field mapping with functional interfaces.",
+          "example": "CheckRowMapper - maps ResultSet to Check entity with organized sections and error handling"
+        }
+      },
+      "benefits": [
+        "Reader class reduced to ~100-120 lines (core reading logic only)",
+        "Helper classes can be tested independently",
+        "Mapper classes can be reused if needed",
+        "Easier to maintain and understand",
+        "Better adherence to Single Responsibility Principle",
+        "Improved code organization and discoverability"
+      ],
+      "implementation": [
+        "Create reader/helper/ subdirectory for helper classes",
+        "Create reader/mapper/ subdirectory for mapper classes",
+        "Extract date parsing to *DateParser helper with static methods",
+        "Extract query building to *QueryProvider helper",
+        "Extract RowMapper to separate *RowMapper class",
+        "Update Reader to use the new helper and mapper classes",
+        "Maintain comprehensive JavaDoc in all classes",
+        "Add cross-references between related components"
+      ]
+    },
+    "parallelProcessing": {
+      "taskExecutor": "Configure dedicated TaskExecutor for each batch with: appropriate core/max pool sizes, queue capacity, thread name prefix, graceful shutdown settings. Comment out if reader implements ItemStream to avoid warnings.",
+      "chunkSize": "Configure chunk size based on: data volume, transaction size, memory constraints. Typical values: 500-1000 for normal loads, 100-200 for heavy processing."
+    }
+  }
+}

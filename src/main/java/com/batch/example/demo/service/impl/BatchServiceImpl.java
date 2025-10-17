@@ -1,17 +1,17 @@
 package com.batch.example.demo.service.impl;
 
 import com.batch.example.demo.service.BatchService;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Builder
 @Slf4j
 public class BatchServiceImpl implements BatchService {
     private final JobLauncher jobLauncher;
@@ -22,7 +22,10 @@ public class BatchServiceImpl implements BatchService {
     @Override
     public void executeBatchJob() {
         try {
-            jobLauncher.run(job, null);
+            JobParameters jobParameters = new JobParametersBuilder()
+                    .addLong("time", System.currentTimeMillis())
+                    .toJobParameters();
+            jobLauncher.run(job, jobParameters);
         } catch (Exception e) {
             log.error("Error executing batch job: {}", e.getMessage());
         }

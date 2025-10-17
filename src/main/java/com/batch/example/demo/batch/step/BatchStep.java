@@ -26,13 +26,12 @@ public class BatchStep {
     private final CSVReader csvReader;
     private final RawDataWriter rawDataWriter;
 
-    @JobScope
-    @Bean(name = "batchStep")
+    @Bean(name = "batchStepBean")
     public Step processPerson (JobRepository jobRepository,
                                PlatformTransactionManager platformTransactionManager){
         return new StepBuilder("batchStep", jobRepository)
                 .<PersonDto, RawData>chunk(chunk, platformTransactionManager)
-                .reader(csvReader)
+                .reader(csvReader.reader())
                 .processor(personProcessor)
                 .writer(rawDataWriter)
                 .build();

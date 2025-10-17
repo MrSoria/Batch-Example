@@ -31,7 +31,7 @@
         <version.mapstruct-lombok>0.2.0</version.mapstruct-lombok>
         <version.spring-boot-starter-batch>3.2.4</version.spring-boot-starter-batch>
         <version.jackson>2.17.2</version.jackson>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <lombok.version>1.18.30</lombok.version>
     </properties>
 	<dependencies>
@@ -60,6 +60,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.hypersistence</groupId>
+            <artifactId>hypersistence-utils-hibernate-63</artifactId>
+            <version>3.7.3</version>
         </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

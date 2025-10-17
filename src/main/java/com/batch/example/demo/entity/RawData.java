@@ -2,10 +2,12 @@ package com.batch.example.demo.entity;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +26,7 @@ public class RawData {
     @Column(name = "type")
     private String type;
 
+    @Type(JsonBinaryType.class)
     @Column(name = "data", columnDefinition = "jsonb")
     private JsonNode data;
 

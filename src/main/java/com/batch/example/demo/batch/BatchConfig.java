@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 public class BatchConfig {
     private final JobRepository jobRepository;
     @Bean(name = "batchJobBean")
-    public Job batchJob(JobRepository jobRepository, @Qualifier(value = "batchStep") Step batchStep){
+    public Job batchJob(JobRepository jobRepository, @Qualifier(value = "batchStepBean") Step batchStep){
         return new JobBuilder("BatchJob", jobRepository)
                 .start(batchStep)
                 .build();
